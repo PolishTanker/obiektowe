@@ -25,6 +25,8 @@ class Mug:
         self.content_amount += transferred
         if transferred != content_amount:
             raise RuntimeError('Mug overflow')
+        
+        self.content_type = content_type
 
     def pour_out_liquid(self, requested_amount: float):
         transferred = min(requested_amount, self.content_amount)
