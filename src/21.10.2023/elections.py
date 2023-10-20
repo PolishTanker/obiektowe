@@ -25,6 +25,22 @@ class Constituency:
     # use this method: D'Hondt method
 
     def get_results_as_members_of_parliament(self, parliament_places: int) -> list[int]:
+        
+        results = [0] * self.__n_parties
+        quotients = []
+
+        for i in range(self.__n_parties):
+            for j in range(1, parliament_places + 1):
+                quotients.append((self.__votes[i] / j, i))
+
+        quotients.sort(reverse=True)
+
+        for i in range(parliament_places):
+            _, party_index = quotients[i]
+            results[party_index] += 1
+
+        return results
+        
         """
         :param parliament_places: how many places should be split
         :return: for each of the parties (in order) get the number of members of parliament it gets
