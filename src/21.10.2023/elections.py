@@ -1,7 +1,10 @@
 class NameValidator:
     def is_valid(self, name: str) -> bool:
+        if len(name) <= 2:
+            return False
         # New validation: valid names contain only letters (both upper and lower case)
-        return all(char.isalpha() for char in name)
+        return bool(name) and all(char.isalpha() for char in name)
+
 
 
 class Constituency:
@@ -19,6 +22,8 @@ class Constituency:
     def register_voter(self, voter_name: str):
         if voter_name in self.__voted:
             raise RuntimeError('This person is already registered')
+        if not NameValidator().is_valid(voter_name):
+            raise RuntimeError('Not a valid name')
         self.__voted[voter_name] = False  # not voted
 
     def is_registered(self, voter_name: str) -> bool:

@@ -53,7 +53,15 @@ class ElectionsTest(unittest.TestCase):
     def test_cannot_create_voter_with_invalid_name(self):
         validator = NameValidator()
         self.assertFalse(validator.is_valid('Invalid Name'))
+        
+    def test_name_validator_invalid_names(self):
+        validator = NameValidator()
+        self.assertFalse(validator.is_valid('Invalid@Name'))
+        self.assertFalse(validator.is_valid('1234'))
+        self.assertFalse(validator.is_valid('Wo'))
+        self.assertFalse(validator.is_valid(''))
+        self.assertTrue(validator.is_valid('Wotek'))
 
-
+    
 if __name__ == '__main__':
     unittest.main()
