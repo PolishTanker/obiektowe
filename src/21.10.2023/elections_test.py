@@ -1,7 +1,7 @@
 import unittest
 
-from src.elections import Constituency
-
+from elections import Constituency 
+from elections import NameValidator
 
 class ElectionsTest(unittest.TestCase):
     def setUp(self):
@@ -16,32 +16,43 @@ class ElectionsTest(unittest.TestCase):
         self.assertTrue(self.testee.is_registered(voter))
 
     def test_registered_can_vote(self):
-        pass
+        self.testee.register_voter('Bob')
+        self.assertTrue(self.testee.can_vote('Bob'))
 
     def test_cannot_register_twice(self):
-        pass
+        voter = 'Bob'
+        self.testee.register_voter(voter)
+        with self.assertRaises(RuntimeError):
+            self.testee.register_voter(voter)
 
     def test_vote_twice(self):
-        pass
+        self.testee.register_voter('Bob')
+        self.testee.vote('Bob', party='PartyA')
+        with self.assertRaises(RuntimeError):
+            self.testee.vote('Bob', party='PartyA')
 
     def test_votes_are_reflected_in_party_totals(self):
-        pass
+        self.testee.register_voter('Bob')
+        self.testee.vote('Bob', party='PartyA')
+        self.assertEqual(self.testee.get_votes_of_party('PartyA'), 1)
 
     def test_cannot_vote_for_nonexistent_party(self):
-        pass
+        self.testee.register_voter('Bob')
+        with self.assertRaises(RuntimeError):
+            self.testee.vote('Bob', party='NonexistentParty')
 
     def test_cannot_create_two_parties_with_same_name(self):
-        pass
+        with self.assertRaises(ValueError):
+            Constituency(['PartyA', 'PartyA'])
 
     # with validators
     def test_can_create_voter_with_valid_name(self):
-        pass
+        validator = NameValidator()
+        self.assertTrue(validator.is_valid('ValidName'))
 
     def test_cannot_create_voter_with_invalid_name(self):
-        pass
-
-
-
+        validator = NameValidator()
+        self.assertFalse(validator.is_valid('Invalid Name'))
 
 
 if __name__ == '__main__':

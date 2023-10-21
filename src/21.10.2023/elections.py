@@ -1,3 +1,10 @@
+class NameValidator:
+    def is_valid(self, name: str) -> bool:
+        # New validation: valid names contain only letters (both upper and lower case)
+        return all(char.isalpha() for char in name)
+
+
+
 class Constituency:
 
     def __init__(self, parties: list[str]):
@@ -6,19 +13,22 @@ class Constituency:
         self.__n_parties = len(parties)
         self.__votes = [0] * self.__n_parties
 
+        # Check for duplicate parties
+        if len(set(parties)) != len(parties):
+            raise ValueError("Duplicate party names are not allowed")
+
     def register_voter(self, voter_name: str):
         if voter_name in self.__voted:
             raise RuntimeError('This person is already registered')
         self.__voted[voter_name] = False  # not voted
 
     def is_registered(self, voter_name: str) -> bool:
-        pass
+        return voter_name in self.__voted
 
     def can_vote(self, voter_name: str) -> bool:
-        pass
+        return voter_name in self.__voted and not self.__voted[voter_name]
 
     def vote(self, voter_name: str, party: str):
-        # throws RuntimeError if voter cannot vote, or has already voted
         if voter_name not in self.__voted:
             raise RuntimeError('Person cannot vote')
         if self.__voted[voter_name]:
@@ -27,29 +37,27 @@ class Constituency:
             raise RuntimeError('No such party')
         idx = self.__parties.index(party)
         self.__votes[idx] += 1
+        self.__voted[voter_name] = True  # mark as voted
 
     def get_votes_of_party(self, party_name: str) -> int:
-        pass
+        if party_name in self.__parties:
+            idx = self.__parties.index(party_name)
+            return self.__votes[idx]
+        else:
+            raise RuntimeError('No such party')
 
     def get_results_as_members_of_parliament(self, parliament_places: int) -> list[int]:
-        """
-        :param parliament_places: how many places should be split
-        :return: for each of the parties (in order) get the number of members of parliament it gets
-        """
-        # todo: please implenent the D'Hondt method _before_ Oct 15th 7am CEST
-        return self.__votes
+        results = [0] * self.__n_parties
+        quotients = []
 
+        for i in range(self.__n_parties):
+            for j in range(1, parliament_places + 1):
+                quotients.append((self.__votes[i] / j, i))
 
-class NameValidator:
-    def is_valid(self, name:str) -> bool:
-        pass
+        quotients.sort(reverse=True)
 
-if __name__ == '__main__':
-    con = Constituency(['A', 'B', 'C'])
-    con.register_voter('u1')
-    con.register_voter('u2')
-    con.register_voter('u3')
-    con.vote('u1', 'A')
-    con.vote('u2', 'A')
-    con.vote('u3', 'A')
-    print(con.get_results_as_members_of_parliament(10))
+        for i in range(parliament_places):
+            _, party_index = quotients[i]
+            results[party_index] += 1
+
+        return results
