@@ -11,12 +11,6 @@ class Constituency:
             raise RuntimeError('This person is already registered')
         self.__voted[voter_name] = False  # not voted
 
-    def is_registered(self, voter_name: str) -> bool:
-        pass
-
-    def can_vote(self, voter_name: str) -> bool:
-        pass
-
     def vote(self, voter_name: str, party: str):
         # throws RuntimeError if voter cannot vote, or has already voted
         if voter_name not in self.__voted:
@@ -28,10 +22,25 @@ class Constituency:
         idx = self.__parties.index(party)
         self.__votes[idx] += 1
 
-    def get_votes_of_party(self, party_name: str) -> int:
-        pass
+    # use this method: D'Hondt method
 
     def get_results_as_members_of_parliament(self, parliament_places: int) -> list[int]:
+        
+        results = [0] * self.__n_parties
+        quotients = []
+
+        for i in range(self.__n_parties):
+            for j in range(1, parliament_places + 1):
+                quotients.append((self.__votes[i] / j, i))
+
+        quotients.sort(reverse=True)
+
+        for i in range(parliament_places):
+            _, party_index = quotients[i]
+            results[party_index] += 1
+
+        return results
+        
         """
         :param parliament_places: how many places should be split
         :return: for each of the parties (in order) get the number of members of parliament it gets
@@ -39,10 +48,6 @@ class Constituency:
         # todo: please implenent the D'Hondt method _before_ Oct 15th 7am CEST
         return self.__votes
 
-
-class NameValidator:
-    def is_valid(self, name:str) -> bool:
-        pass
 
 if __name__ == '__main__':
     con = Constituency(['A', 'B', 'C'])
