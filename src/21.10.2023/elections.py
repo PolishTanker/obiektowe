@@ -4,7 +4,6 @@ class NameValidator:
         return all(char.isalpha() for char in name)
 
 
-
 class Constituency:
 
     def __init__(self, parties: list[str]):
