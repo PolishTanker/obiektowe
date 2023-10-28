@@ -65,3 +65,5 @@ class Constituency:
             results[party_index] += 1
 
         return results
+
+
